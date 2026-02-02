@@ -1,26 +1,38 @@
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
+import axios from "axios"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const handleSumbit = async (e) => {
+    e.preventDefault()
+    let data = {
+      "BMI": 19.2,
+      "Smoking": "No",
+      "AlcoholDrinking": "No",
+      "Stroke": "No",
+      "PhysicalHealth": 7,
+      "MentalHealth": 2,
+      "DiffWalking": "No",
+      "Sex": "Male",
+      "AgeCategory": "18-24",
+      "Race": "Asian",
+      "Diabetic": "No",
+      "PhysicalActivity": "Yes",
+      "GenHealth": "Good",
+      "SleepTime": 6,
+      "Asthma": "Yes",
+      "KidneyDisease": "No",
+      "SkinCancer": "No"
+    }
+    console.log(data)
+    let res = await axios.post("http://localhost:5000/predict", data)
+    console.log(res)
+  }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4">
-      <div className="space-y-4 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">Vite + React + Tailwind + shadcn/ui</h1>
-        <p className="text-muted-foreground">
-          Setup complete! You can now start building your application.
-        </p>
-        <div className="flex flex-col items-center gap-4">
-          <Button onClick={() => setCount((count) => count + 1)}>
-            Count is {count}
-          </Button>
-          <p className="text-sm">
-            Edit <code className="bg-muted px-1 rounded">src/App.jsx</code> and save to test HMR
-          </p>
-        </div>
-      </div>
-    </div>
+    <>
+      <form onSubmit={handleSumbit}>
+        <button type="submit">Send</button>
+      </form>
+    </>
   )
 }
 

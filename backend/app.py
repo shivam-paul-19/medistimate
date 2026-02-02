@@ -1,64 +1,131 @@
 from flask import Flask, request, jsonify
 import pickle
 import pandas as pd
+from flask_cors import CORS
+from abc import ABC, abstractmethod
 
 app = Flask(__name__)
+CORS(app)
 
-with open('Heart_health_module/heart_disease_predictor.pkl', 'rb') as file:
-    heart_model = pickle.load(file)
+def loadModel(filePath: str) -> object:
+    with open(filePath, "rb") as file:
+        return pickle.load(file)
 
-def makeDF(data):
-    '''
-    Takes raw Json data and converts it into a Pandas Dataframe
-    parameters:
-        data: raw json data
-    returns:
-        df: pandas dataframe
-    '''
-    df = pd.DataFrame([dict(data)])
-    return df
+heart_model = loadModel('Heart_health_module/heart_disease_predictor.pkl')
+sleep_model = loadModel('Sleep_quality_module/sleep_disorder_predictor.pkl')
+metabolism_model = loadModel('Metabolism_module/metabolic_syndrome_predictor.pkl')
 
-def getPrediction(data, model):
-    '''
-    Takes raw data and make prediction for respective models
-    paramaters:
-        data: raw json data
-        model: prediction model
-    returns:
-        pred: prediction done by model as output value 
-    '''
-    df = makeDF(data)   # converts into pandas dataframe
-    pred = model.predict(df)
-    return pred[0]
+# Classes for making prediction
+class PredictionModel(ABC):
+    @abstractmethod
+    def predict(data: pd.DataFrame) -> int:
+        pass
+
+class HeartPredictionModel(PredictionModel):
+    def predict(data: pd.DataFrame) -> int:
+        prediction = heart_model.predict(data)
+        return prediction[0]
+
+class SleepPredictionModel(PredictionModel):
+    def predict(data: pd.DataFrame) -> int:
+        prediction = sleep_model.predict(data)
+        return prediction[0]
+
+class MetabolismPredictionModel(PredictionModel):
+    def predict(data: pd.DataFrame) -> int:
+        prediction = metabolism_model.predict(data)
+        return prediction[0]
+
+# class to preprocess data
+class Preprocessor(ABC):
+    @abstractmethod
+    def process(data: dict) -> pd.DataFrame:
+        pass
+
+class HeartPreprocessor(Preprocessor):
+    def process(data: dict) -> pd.DataFrame:
+        cols = ["BMI","Smoking","AlcoholDrinking","Stroke","PhysicalHealth","MentalHealth",
+            "DiffWalking","Sex","AgeCategory","Race","Diabetic","PhysicalActivity","GenHealth",
+            "SleepTime","Asthma","KidneyDisease", "SkinCancer"]
+        
+        values = []
+        for col in cols:
+            values.append(data[col])
+        
+        return pd.DataFrame([values], columns=cols)
+    
+class SleepPreprocessor(Preprocessor):
+    def process(data: dict) -> pd.DataFrame:
+        cols = ['Gender', 'Age', 'Occupation', 'Sleep Duration', 'Quality of Sleep', 
+        'Physical Activity Level', 'Stress Level', 'BMI Category', 
+        'Blood Pressure', 'Heart Rate', 'Daily Steps']
+        
+        values = []
+        for col in cols:
+            values.append(data[col])
+        
+        return pd.DataFrame([values], columns=cols)
+
+class MetabolismPreprocessor(Preprocessor):
+    def process(data: dict) -> pd.DataFrame:
+        cols = ['Age', 'Sex', 'Race', 'BMI', 'Albuminuria', 'UrAlbCr', 
+        'UricAcidCategory', 'HDLCategory', 'TrigCategory', 'BloodSugarCategory']
+        
+        values = []
+        for col in cols:
+            values.append(data[col])
+        
+        return pd.DataFrame([values], columns=cols)
+
+# class to manage all the flow
+class PredictionOrechestrator():
+    def __init__(self, models: list, preprocessors: list, names: list):
+        self.models = models
+        self.preprocessors = preprocessors
+        self.names = names
+    
+    def run(self, data: dict) -> dict:
+        output = {}
+
+        for model, preprocessors, module_name in zip(self.models, self.preprocessors, self.names):
+            processed_data = preprocessors.process(data)
+            prediction = model.predict(processed_data)
+            output[module_name] = prediction
+
+        return output
+    
+model_list = [HeartPredictionModel(), SleepPredictionModel(), MetabolismPredictionModel()]
+preprocessors_list = [HeartPreprocessor(), SleepPreprocessor(), MetabolismPreprocessor()]
+names_list = ["Heart", "Sleep", "Metabolism"]
+
+predictor = PredictionOrechestrator(models=model_list, preprocessors=preprocessors_list, names=names_list)
 
 @app.route("/predict", methods=["POST"])
-def post():
+def predict():
     if request.is_json:
         data = request.get_json()
-        heart = getPrediction(data, model=heart_model)
+        
         return jsonify({
-            "heart": float(heart)
+            "heart": float(0)
         }), 200
     else:
         return jsonify("wrong Data")
-    
 
-# test_instance = pd.DataFrame([{
-#   "BMI": 19.2,
-#   "Smoking": "No",
-#   "AlcoholDrinking": "No",
-#   "Stroke": "No",
-#   "PhysicalHealth": 7,
-#   "MentalHealth": 2,
-#   "DiffWalking": "No",
-#   "Sex": "Male",
-#   "AgeCategory": "18-24",
-#   "Race": "Asian",
-#   "Diabetic": "No",
-#   "PhysicalActivity": "Yes",
-#   "GenHealth": "Good",
-#   "SleepTime": 6,
-#   "Asthma": "Yes",
-#   "KidneyDisease": "No",
-#   "SkinCancer": "No"
-# }])
+# routes to test the server only
+@app.route("/test", methods=["GET"])
+def test():
+    return "All ok!"
+
+@app.route("/testpost", methods=["POST"])
+def testpost():
+    if request.is_json:
+        data = request.get_json()
+        return jsonify({
+            "status": "All good",
+            "data": data
+        }), 200
+
+    else:
+        return jsonify({
+            "status": "problem in data",
+        }), 400
