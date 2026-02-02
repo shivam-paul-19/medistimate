@@ -4,21 +4,21 @@ function App() {
   const handleSumbit = async (e) => {
     e.preventDefault()
     let data = {
-      "BMI": 19.2,
-      "Smoking": "No",
-      "AlcoholDrinking": "No",
+      "BMI": 29.2,
+      "Smoking": "Yes",
+      "AlcoholDrinking": "Yes",
       "Stroke": "No",
-      "PhysicalHealth": 7,
-      "MentalHealth": 2,
+      "PhysicalHealth": 20,
+      "MentalHealth": 12,
       "DiffWalking": "No",
       "Sex": "Male",
-      "AgeCategory": "18-24",
-      "Race": "Asian",
+      "AgeCategory": "75-79",
+      "Race": "White",
       "Diabetic": "No",
       "PhysicalActivity": "Yes",
       "GenHealth": "Good",
       "SleepTime": 6,
-      "Asthma": "Yes",
+      "Asthma": "No",
       "KidneyDisease": "No",
       "SkinCancer": "No"
     }

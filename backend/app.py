@@ -18,32 +18,32 @@ metabolism_model = loadModel('Metabolism_module/metabolic_syndrome_predictor.pkl
 # Classes for making prediction
 class PredictionModel(ABC):
     @abstractmethod
-    def predict(data: pd.DataFrame) -> int:
+    def predict(self, data: pd.DataFrame) -> int:
         pass
 
 class HeartPredictionModel(PredictionModel):
-    def predict(data: pd.DataFrame) -> int:
+    def predict(self, data: pd.DataFrame) -> int:
         prediction = heart_model.predict(data)
         return prediction[0]
 
 class SleepPredictionModel(PredictionModel):
-    def predict(data: pd.DataFrame) -> int:
+    def predict(self, data: pd.DataFrame) -> int:
         prediction = sleep_model.predict(data)
         return prediction[0]
 
 class MetabolismPredictionModel(PredictionModel):
-    def predict(data: pd.DataFrame) -> int:
+    def predict(self, data: pd.DataFrame) -> int:
         prediction = metabolism_model.predict(data)
         return prediction[0]
 
 # class to preprocess data
 class Preprocessor(ABC):
     @abstractmethod
-    def process(data: dict) -> pd.DataFrame:
+    def process(self, data: dict) -> pd.DataFrame:
         pass
 
 class HeartPreprocessor(Preprocessor):
-    def process(data: dict) -> pd.DataFrame:
+    def process(self, data: dict) -> pd.DataFrame:
         cols = ["BMI","Smoking","AlcoholDrinking","Stroke","PhysicalHealth","MentalHealth",
             "DiffWalking","Sex","AgeCategory","Race","Diabetic","PhysicalActivity","GenHealth",
             "SleepTime","Asthma","KidneyDisease", "SkinCancer"]
@@ -55,7 +55,7 @@ class HeartPreprocessor(Preprocessor):
         return pd.DataFrame([values], columns=cols)
     
 class SleepPreprocessor(Preprocessor):
-    def process(data: dict) -> pd.DataFrame:
+    def process(self, data: dict) -> pd.DataFrame:
         cols = ['Gender', 'Age', 'Occupation', 'Sleep Duration', 'Quality of Sleep', 
         'Physical Activity Level', 'Stress Level', 'BMI Category', 
         'Blood Pressure', 'Heart Rate', 'Daily Steps']
@@ -67,7 +67,7 @@ class SleepPreprocessor(Preprocessor):
         return pd.DataFrame([values], columns=cols)
 
 class MetabolismPreprocessor(Preprocessor):
-    def process(data: dict) -> pd.DataFrame:
+    def process(self, data: dict) -> pd.DataFrame:
         cols = ['Age', 'Sex', 'Race', 'BMI', 'Albuminuria', 'UrAlbCr', 
         'UricAcidCategory', 'HDLCategory', 'TrigCategory', 'BloodSugarCategory']
         
@@ -109,7 +109,7 @@ def predict():
         model = HeartPredictionModel()
         output = model.predict(processed_data)
         return jsonify({
-            "heart": float(output[0])
+            "heart": float(output)
         }), 200
     else:
         return jsonify("wrong Data")

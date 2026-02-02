@@ -1,4 +1,5 @@
 /backend/raw_data
 /frontend/node_modules
 
-backend/rough.py
+/backend/rough.py
+backend/__pycache__/*
