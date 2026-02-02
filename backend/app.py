@@ -104,9 +104,12 @@ predictor = PredictionOrechestrator(models=model_list, preprocessors=preprocesso
 def predict():
     if request.is_json:
         data = request.get_json()
-        
+        processor = HeartPreprocessor()
+        processed_data = processor.process(dict(data))
+        model = HeartPredictionModel()
+        output = model.predict(processed_data)
         return jsonify({
-            "heart": float(0)
+            "heart": float(output[0])
         }), 200
     else:
         return jsonify("wrong Data")
