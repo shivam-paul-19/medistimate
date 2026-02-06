@@ -1,10 +1,19 @@
 import { useState } from 'react';
 import './Form.css';
 import axios from "axios";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
-import { Info } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 
-// Field descriptions for hover cards
+// Field descriptions for alert dialogs
 const fieldDescriptions = {
   age: "Your current age in years",
   gender: "Biological sex assigned at birth",
@@ -22,8 +31,8 @@ const fieldDescriptions = {
   physicalActivityDuration: "Minutes of daily physical activity",
   smoking: "Current or past smoking habits",
   alcoholDrinking: "Regular alcohol consumption status currently",
-  physicalHealth: "Days feeling physically unwell monthly",
-  mentalHealth: "Days feeling mentally unwell monthly",
+  physicalHealth: "Number of days you were unwell in the past month",
+  mentalHealth: "Number of days you were unwell in the past month",
   stressLevel: "Current perceived stress level rating on a scale of 1 (no stress) to 10 (extremely high stress)",
   genHealth: "Overall self-assessment of health status",
   diffWalking: "Difficulty walking or climbing stairs",
@@ -39,7 +48,7 @@ const fieldDescriptions = {
   trigCategory: "Triglyceride blood level category status"
 };
 
-// Reusable FieldLabel component with hover card
+// Reusable FieldLabel component with badge and alert dialog
 const FieldLabel = ({ htmlFor, children, fieldName }) => {
   const description = fieldDescriptions[fieldName];
   
@@ -50,14 +59,24 @@ const FieldLabel = ({ htmlFor, children, fieldName }) => {
   return (
     <label htmlFor={htmlFor} className="field-label-wrapper">
       {children}
-      <HoverCard openDelay={100} closeDelay={200}>
-        <HoverCardTrigger asChild>
-          <Info className="info-icon" size={16} />
-        </HoverCardTrigger>
-        <HoverCardContent side="top" align="start" className="hover-card-content">
-          {description}
-        </HoverCardContent>
-      </HoverCard>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Badge variant="outline" className="info-badge cursor-pointer">
+            What's this?
+          </Badge>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{children}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>Got it!</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </label>
   );
 };
@@ -548,7 +567,7 @@ const Form = ({getOutput, open, load}) => {
                 onChange={handleChange}
                 min="1"
                 max="30"
-                placeholder="1-30 days (Number of days you were unwell in the past month)"
+                placeholder="1-30 days"
               />
               {errors.physicalHealth && <span className="error">{errors.physicalHealth}</span>}
             </div>
@@ -563,7 +582,7 @@ const Form = ({getOutput, open, load}) => {
                 onChange={handleChange}
                 min="1"
                 max="30"
-                placeholder="1-30 days (Number of days you were unwell in the past month)"
+                placeholder="1-30 days"
               />
               {errors.mentalHealth && <span className="error">{errors.mentalHealth}</span>}
             </div>

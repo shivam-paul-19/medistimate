@@ -102,34 +102,30 @@
     gap: 0.25rem;
 }
 
-/* Field Label with Hover Card */
+/* Field Label with Badge */
 .field-label-wrapper {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.info-icon {
+.info-badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+    height: auto;
+    background: transparent;
+    border-color: #fda5d5;
     color: #fda5d5;
-    cursor: pointer;
     transition: all 0.2s ease;
-    flex-shrink: 0;
+    cursor: pointer;
+    user-select: none;
 }
 
-.info-icon:hover {
-    color: #fb64b6;
-    transform: scale(1.1);
-}
-
-/* Hover Card Content Styling */
-.hover-card-content {
-    background: #1a1a2e !important;
-    border: 1px solid #e60076 !important;
-    color: #f3f4f6 !important;
-    font-size: 0.875rem;
-    font-weight: 400;
-    max-width: 250px;
-    box-shadow: 0 4px 20px rgba(230, 0, 118, 0.3) !important;
+.info-badge:hover {
+    background-color: #fda5d5;
+    color: #030712;
+    border-color: #fb64b6;
+    transform: scale(1.05);
 }
 
 .form-field input,
