@@ -548,7 +548,7 @@ const Form = ({getOutput, open, load}) => {
                 onChange={handleChange}
                 min="1"
                 max="30"
-                placeholder="1-30 days"
+                placeholder="1-30 days (Number of days you were unwell in the past month)"
               />
               {errors.physicalHealth && <span className="error">{errors.physicalHealth}</span>}
             </div>
@@ -563,7 +563,7 @@ const Form = ({getOutput, open, load}) => {
                 onChange={handleChange}
                 min="1"
                 max="30"
-                placeholder="1-30 days"
+                placeholder="1-30 days (Number of days you were unwell in the past month)"
               />
               {errors.mentalHealth && <span className="error">{errors.mentalHealth}</span>}
             </div>
